@@ -25,6 +25,61 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('AppBar'),
       ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(14.0),
+            ),
+            ListTile(
+              leading: const Hero(
+                tag: 'hero-rectangle',
+                child: Image(
+                    image: NetworkImage(
+                        'https://i1.sndcdn.com/avatars-000620693316-ukl0j7-t500x500.jpg')),
+              ),
+              onTap: () => _gotoDetailsPage(context),
+              title: const Text(
+                'Kaneki Ken',
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.shopping_cart),
+              title: const Text('Cart'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.favorite),
+              title: const Text('Favorite'),
+              onTap: () {},
+            ),
+            const Padding(
+              padding: EdgeInsets.all(14.0),
+              child: Text("Labels"),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.shopping_cart),
+              title: const Text('Cart'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.favorite),
+              title: const Text('Favorite'),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
       body: PageView(
         controller: pageController,
         children: [
@@ -48,6 +103,29 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Colors.grey,
         onTap: onTap,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _gotoDetailsPage(context),
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
     );
+  }
+
+  void _gotoDetailsPage(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Avatar'),
+        ),
+        body: const Center(
+          child: Hero(
+            tag: 'hero-rectangle',
+            child: Image(
+                image: NetworkImage(
+                    'https://i1.sndcdn.com/avatars-000620693316-ukl0j7-t500x500.jpg')),
+          ),
+        ),
+      ),
+    ));
   }
 }
