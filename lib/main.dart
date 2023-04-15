@@ -1,56 +1,164 @@
-import 'dart:convert';
-import 'package:first_project_flutter_start/provider/theme_settings.dart';
-import 'package:first_project_flutter_start/screens/home.dart';
-import 'package:flutter/foundation.dart';
+import 'package:first_project_flutter_start/widgets/name_age.dart';
+import 'package:first_project_flutter_start/widgets/name_class.dart';
+import 'package:first_project_flutter_start/widgets/named_route.dart';
+import 'package:first_project_flutter_start/widgets/show_pepe.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-
-import 'json/photo.dart';
 
 
-Future<List<Photo>> fetchPhotos(http.Client client) async {
-  final response = await client
-      .get(Uri.parse('https://jsonplaceholder.typicode.com/photos'));
-
-  return compute(parsePhotos, response.body);
-}
-
-
-List<Photo> parsePhotos(String responseBody) {
-  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-
-  return parsed.map<Photo>((json) => Photo.fromJson(json)).toList();
-}
-
-void main() async{
-
-  WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  final isDark = sharedPreferences.getBool('is_dark') ?? false;
-  runApp( MyApp(isDark: isDark,));
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final bool isDark;
-
-  const MyApp({super.key, required this.isDark});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ThemeSettings(isDark),
-      builder: (context, snapshot) {
-        final settings = Provider.of<ThemeSettings>(context);
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: settings.currentTheme,
-          home: const MyHomePage(),
-        );
-      }
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const PreviousScreen(),
+      initialRoute: '/',
+      routes: {
+        '/named_route': (context) => const NamedRoute(),
+      },
     );
   }
 }
 
+class PreviousScreen extends StatefulWidget {
+  const PreviousScreen({super.key});
+
+  @override
+  _PreviousScreenState createState() => _PreviousScreenState();
+}
+
+class _PreviousScreenState extends State<PreviousScreen> {
+  late String _returnedValue =
+      'цей текст зміниться на текст повернений з віджета';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('100 тисяч навігацій'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(14.0),
+            ),
+            ListTile(
+              leading: const Hero(
+                tag: 'hero-rectangle',
+                child: Image(
+                    image: NetworkImage(
+                        'https://i1.sndcdn.com/avatars-000620693316-ukl0j7-t500x500.jpg')),
+              ),
+              onTap: () {},
+              title: const Text(
+                'Kaneki Ken',
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Перехід на віджет по імені класу'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NameClass(anotherName: 'qQwert', anotherAge: 144,)),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.shopping_cart),
+              title: const Text('Перехід на віджет по "іменованій навігації'),
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  '/named_route',
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.favorite),
+              title: const Text('Передача параметрів у віджет, який буде відкрито (через конструктор)'),
+              onTap: () { Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MyWidget(name: 'Василь', age: 30)),
+              );},
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.houseboat_rounded),
+              title: const Text('Повернення параметрів назад при виході з віджета'),
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ShowPepe()),
+                );
+                setState(() {
+                  _returnedValue = result;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          children: [
+            ElevatedButton(
+              child: const Text('Перехід на віджет по імені класу'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NameClass(anotherName: 'qwe', anotherAge: 355,)),
+                );
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  '/named_route',
+                );
+              },
+              child: const Text('Перехід на віджет по "іменованій навігації'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MyWidget(name: 'Василь', age: 30)),
+                );
+              },
+              child: const Text(
+                  'Передача параметрів у віджет, який буде відкрито (через конструктор) '),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ShowPepe()),
+                );
+                setState(() {
+                  _returnedValue = result;
+                });
+              },
+              child: const Text('Повернення параметрів назад при виході з віджета '),
+            ),
+            Text(_returnedValue),
+          ],
+        ),
+      ),
+    );
+  }
+}
